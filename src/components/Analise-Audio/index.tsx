@@ -6,6 +6,7 @@ const AnaliseAudio = () => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -29,7 +30,7 @@ const AnaliseAudio = () => {
     setErrorMessage(null);
 
     try {
-      const response = await fetch('URL_DA_API_DE_ANALISE', {
+      const response = await fetch('http://localhost:5000/ia/insert_audio', {
         method: 'POST',
         body: formData,
       });
@@ -37,7 +38,9 @@ const AnaliseAudio = () => {
         throw new Error('Erro na análise do áudio');
       }
       const data = await response.json();
-      router.push(`/resultados/${data.id}`);
+      setAnalysisResult(data);
+      // Se necessário, redirecionar para outra página com o resultado
+      // router.push(`/resultados/${data.id}`);
     } catch (error) {
       setErrorMessage('Erro ao analisar o áudio: ' + (error as Error).message);
     } finally {
@@ -68,6 +71,12 @@ const AnaliseAudio = () => {
             {loading ? 'Analisando...' : 'Analisar'}
           </button>
         </form>
+        {analysisResult && (
+          <div className="mt-4">
+            <h3 className="text-xl font-semibold">Resultado da Análise:</h3>
+            <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </div>
   );
