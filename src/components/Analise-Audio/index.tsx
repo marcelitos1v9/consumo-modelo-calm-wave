@@ -25,22 +25,22 @@ const AnaliseAudio = () => {
     if (!audioFile) return;
 
     const formData = new FormData();
-    formData.append('audio', audioFile);
+    formData.append('file', audioFile); // Enviando o arquivo de áudio para a requisição
     setLoading(true);
     setErrorMessage(null);
 
     try {
-      const response = await fetch('http://localhost:5000/ia/insert_audio', {
+      const response = await fetch('http://10.67.56.156:5000/ia/insert_audio', {
         method: 'POST',
         body: formData,
       });
       if (!response.ok) {
-        throw new Error('Erro na análise do áudio');
+        const errorData = await response.json(); // Captura a resposta de erro
+        throw new Error(`Erro ${response.status}: ${errorData.message || 'Erro na análise do áudio'}`);
       }
       const data = await response.json();
       setAnalysisResult(data);
-      // Se necessário, redirecionar para outra página com o resultado
-      // router.push(`/resultados/${data.id}`);
+      router.push(`/resultados/${data.id}`); // Redirecionando para a página de resultados
     } catch (error) {
       setErrorMessage('Erro ao analisar o áudio: ' + (error as Error).message);
     } finally {
@@ -58,6 +58,7 @@ const AnaliseAudio = () => {
             <input
               type="file"
               accept=".wav"
+              name='file'
               onChange={handleFileChange}
               className="mt-1 border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition duration-200 ease-in-out hover:border-purple-400"
             />

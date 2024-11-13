@@ -1,6 +1,7 @@
 import Image from "next/image";
 import localFont from "next/font/local";
 import Header from "@/components/Header";
+import ConsumirDados from "@/components/consumir";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -17,6 +18,7 @@ export default function Home() {
   return (
    <>
    <Header/>
+   <ConsumirDados/>
    </>
   );
 }
