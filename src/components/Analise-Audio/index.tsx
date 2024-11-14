@@ -39,8 +39,7 @@ const AnaliseAudio = () => {
         throw new Error(`Erro ${response.status}: ${errorData.message || 'Erro na análise do áudio'}`);
       }
       const data = await response.json();
-      setAnalysisResult(data);
-      router.push(`/resultados/${data.id}`); // Redirecionando para a página de resultados
+      router.push(`/Audios/${data.id}`); // Redirecionando para a página de resultados com o ID
     } catch (error) {
       setErrorMessage('Erro ao analisar o áudio: ' + (error as Error).message);
     } finally {
