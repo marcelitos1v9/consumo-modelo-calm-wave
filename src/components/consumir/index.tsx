@@ -94,6 +94,9 @@ const ConsumirDados = () => {
                 >
                   <div className="flex flex-col">
                     <p className="font-medium text-gray-800">
+                      <span className="font-semibold text-gray-600">ID:</span> {item.id}
+                    </p>
+                    <p className="font-medium text-gray-800">
                       <span className="font-semibold text-gray-600">Data Identificação:</span> {item.data_identificacao}
                     </p>
                     <p className="font-medium text-gray-800">

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 
 const AnaliseAudio = () => {
-  const router = useRouter();
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [spectrogramImage, setSpectrogramImage] = useState<string | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -25,7 +24,7 @@ const AnaliseAudio = () => {
     if (!audioFile) return;
 
     const formData = new FormData();
-    formData.append('file', audioFile); // Enviando o arquivo de áudio para a requisição
+    formData.append('file', audioFile);
     setLoading(true);
     setErrorMessage(null);
 
@@ -35,11 +34,16 @@ const AnaliseAudio = () => {
         body: formData,
       });
       if (!response.ok) {
-        const errorData = await response.json(); // Captura a resposta de erro
+        const errorData = await response.json();
         throw new Error(`Erro ${response.status}: ${errorData.message || 'Erro na análise do áudio'}`);
       }
+
       const data = await response.json();
-      router.push(`/Audios/${data.id}`); // Redirecionando para a página de resultados com o ID
+      setAnalysisResult(data.analysis_results);
+
+      // Converte o Base64 do espectrograma para exibição
+      const spectrogramBase64 = `data:image/png;base64,${data.analysis_results.spectrogram}`;
+      setSpectrogramImage(spectrogramBase64);
     } catch (error) {
       setErrorMessage('Erro ao analisar o áudio: ' + (error as Error).message);
     } finally {
@@ -72,9 +76,17 @@ const AnaliseAudio = () => {
           </button>
         </form>
         {analysisResult && (
-          <div className="mt-4">
+          <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold">Resultado da Análise:</h3>
-            <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
+            <p><strong>Classe Predita:</strong> {analysisResult.predicted_class.predicted_class}</p>
+            <p><strong>ID Salvo:</strong> {analysisResult.predicted_class.saved_id}</p>
+            <p><strong>Tempo de Resposta:</strong> {analysisResult.predicted_class.tempo_resposta}s</p>
+            {spectrogramImage && (
+              <div className="mt-4">
+                <h4 className="text-lg font-semibold">Espectrograma:</h4>
+                <img src={spectrogramImage} alt="Spectrogram" />
+              </div>
+            )}
           </div>
         )}
       </div>
