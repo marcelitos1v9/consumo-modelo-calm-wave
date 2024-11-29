@@ -25,7 +25,7 @@ const Header = () => {
     >
       <div className="container mx-auto flex justify-between items-center">
         <Link 
-          href="/" 
+          href="/home" 
           className="flex items-center space-x-3 group focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg" 
           aria-label="Ir para página inicial"
         >
@@ -44,26 +44,7 @@ const Header = () => {
           aria-label="Menu principal"
         >
           <ul className="flex space-x-8 text-lg font-medium">
-            {/* <li>
-              <Link 
-                href="/" 
-                className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg p-2" 
-                aria-label="Ir para página inicial"
-              >
-                <AiOutlineHome className="text-xl" aria-hidden="true" />
-                <span>Início</span>
-              </Link>
-            </li> */}
-            {/* <li>
-              <Link 
-                href="/Audios/Analisar-audio" 
-                className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg p-2" 
-                aria-label="Ir para análise de áudio"
-              >
-                <AiOutlineAudio className="text-xl" aria-hidden="true" />
-                <span>Analisar Áudio</span>
-              </Link>
-            </li> */}
+            
             <li>
               <Link 
                 href="/Audios/lista" 
@@ -133,7 +114,7 @@ const Header = () => {
             <ul className="space-y-4 text-lg font-medium">
               <li>
                 <Link 
-                  href="/" 
+                  href="/home" 
                   className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 p-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
                   aria-label="Ir para página inicial"
                   onClick={() => setIsMenuOpen(false)}
