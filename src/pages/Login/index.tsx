@@ -16,6 +16,18 @@ export default function Webapplication() {
 
   return (
     <>
+      {/* Botão Voltar */}
+      <button
+        onClick={() => window.history.back()}
+        className="absolute top-4 left-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300 z-30 flex items-center gap-2"
+        aria-label="Voltar para página anterior"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Voltar</span>
+      </button>
+
       <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-900 relative overflow-hidden p-4">
         {/* Ondas de áudio animadas - Ocultas em mobile */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block" aria-hidden="true">
@@ -60,7 +72,7 @@ export default function Webapplication() {
               className="w-16 md:w-20 h-auto"
             />
           </div>
-          <h2 className="text-xl md:text-2xl text-white font-bold text-center mb-6 animate-fade-in" role="heading" aria-level="1">
+          <h2 className="text-xl md:text-2xl text-white font-bold text-center mb-6 animate-fade-in" role="heading" aria-level={1}>
             {isLogin ? 'Login' : 'Registrar'}
           </h2>
           <form className="space-y-4 md:space-y-6" noValidate>
