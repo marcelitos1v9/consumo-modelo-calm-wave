@@ -4,6 +4,8 @@ import { AiOutlineHome, AiOutlineAudio } from 'react-icons/ai';
 import { BiBarChartAlt2 } from 'react-icons/bi';
 import { BsMusicNote, BsList, BsX } from 'react-icons/bs';
 import { MdOutlineAnalytics } from 'react-icons/md';
+import { FiLogOut } from 'react-icons/fi';
+import { IoMdHelpCircleOutline } from 'react-icons/io';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,7 +44,7 @@ const Header = () => {
           aria-label="Menu principal"
         >
           <ul className="flex space-x-8 text-lg font-medium">
-            <li>
+            {/* <li>
               <Link 
                 href="/" 
                 className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg p-2" 
@@ -51,8 +53,8 @@ const Header = () => {
                 <AiOutlineHome className="text-xl" aria-hidden="true" />
                 <span>Início</span>
               </Link>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <Link 
                 href="/Audios/Analisar-audio" 
                 className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg p-2" 
@@ -61,7 +63,7 @@ const Header = () => {
                 <AiOutlineAudio className="text-xl" aria-hidden="true" />
                 <span>Analisar Áudio</span>
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link 
                 href="/Audios/lista" 
@@ -80,6 +82,26 @@ const Header = () => {
               >
                 <MdOutlineAnalytics className="text-xl" aria-hidden="true" />
                 <span>Dashboard</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/suporte" 
+                className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg p-2" 
+                aria-label="Ir para suporte"
+              >
+                <IoMdHelpCircleOutline className="text-xl" aria-hidden="true" />
+                <span>Suporte</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/logout" 
+                className="text-white hover:text-gray-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-2 font-bold hover:bg-white/10" 
+                aria-label="Encerrar sessão e fazer logout do sistema"
+              >
+                <FiLogOut className="text-xl" aria-hidden="true" />
+                <span>Sair</span>
               </Link>
             </li>
           </ul>
@@ -151,6 +173,28 @@ const Header = () => {
                 >
                   <MdOutlineAnalytics className="text-xl" aria-hidden="true" />
                   <span>Dashboard</span>
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/suporte" 
+                  className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 p-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
+                  aria-label="Ir para suporte"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <IoMdHelpCircleOutline className="text-xl" aria-hidden="true" />
+                  <span>Suporte</span>
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/logout" 
+                  className="text-red-400 hover:text-red-300 transition duration-300 flex items-center space-x-2 p-2 rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400 w-full font-bold border border-white"
+                  aria-label="Encerrar sessão e fazer logout do sistema"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiLogOut className="text-xl" aria-hidden="true" />
+                  <span>Sair</span>
                 </Link>
               </li>
             </ul>
