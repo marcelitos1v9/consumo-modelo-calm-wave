@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import { FaAmbulance, FaCar } from 'react-icons/fa';
-import { GiDogBowl, GiFireTruck, GiSoundWaves, GiWaveSurfer } from 'react-icons/gi';
+import { GiDogBowl, GiMineTruck, GiSoundWaves, GiWaveSurfer } from 'react-icons/gi';
 import { BsClock, BsCalendarEvent, BsBarChartFill, BsInfoCircle, BsArrowLeft } from 'react-icons/bs';
 import { BiShare, BiDownload } from 'react-icons/bi';
 import { IoMdTimer } from 'react-icons/io';
@@ -31,7 +31,7 @@ const AudioDetails = () => {
     const icons: {[key: string]: JSX.Element} = {
       'ambulance': <FaAmbulance className="text-2xl" />,
       'dog': <GiDogBowl className="text-2xl" />,
-      'firetruck': <GiFireTruck className="text-2xl" />,
+      'firetruck': <GiMineTruck className="text-2xl" />,
       'traffic': <FaCar className="text-2xl" />
     };
     return icons[tipo.toLowerCase()] || <GiSoundWaves className="text-2xl" />;

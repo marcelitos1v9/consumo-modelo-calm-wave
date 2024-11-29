@@ -43,13 +43,22 @@ export default function Home() {
         // Garantir que apenas as 5 análises mais recentes sejam exibidas
         setRecentAnalyses(analysesData.slice(0, 5));
 
-        // Buscar estatísticas
-        const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ia/stats`);
-        if (!statsResponse.ok) {
-          throw new Error('Erro na resposta da API de estatísticas');
-        }
-        const statsData = await statsResponse.json();
-        setStats(statsData);
+        // Calcular estatísticas a partir dos dados recebidos
+        const totalAnalises = analysesData.length;
+        const mediaTempoResposta = analysesData.reduce((acc: number, curr: RecentAnalysis) => 
+          acc + curr.tempo_resposta, 0) / totalAnalises;
+        
+        const tiposRuido = analysesData.reduce((acc: {[key: string]: number}, curr: RecentAnalysis) => {
+          acc[curr.tipo_ruido] = (acc[curr.tipo_ruido] || 0) + 1;
+          return acc;
+        }, {});
+
+        setStats({
+          total_analises: totalAnalises,
+          media_tempo_resposta: mediaTempoResposta,
+          tipos_ruido: tiposRuido
+        });
+
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         // Adicionar tratamento de erro mais específico aqui se necessário

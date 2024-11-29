@@ -301,13 +301,6 @@ const Dados = () => {
                 </div>
               </div>
             </div>
-
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 mb-8">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                Histórico Completo
-              </h3>
-              <ListagemCompleta dados={dados} />
-            </div>
           </>
         )}
       </div>
