@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { GiSoundWaves, GiWaveSurfer } from 'react-icons/gi';
+import { BsBarChartFill, BsClock, BsUpload, BsCheckCircle } from 'react-icons/bs';
+import { AiOutlineAudio, AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { FaFileAudio } from 'react-icons/fa';
 
 interface AnalysisResult {
   analysis_results: {
@@ -35,29 +39,28 @@ const AnaliseAudio = () => {
     if (!path) return null;
 
     const fullUrl = `${process.env.NEXT_PUBLIC_API_URL}/uploads/${path}`;
-    console.log(`URL construída para ${fieldName}:`, fullUrl);
 
     return (
-      <div className="border-t border-gray-700 pt-6">
-        <h2 className="text-xl font-semibold text-white mb-4">
-          {fieldName === 'spectrogram_base64' && 'Espectrograma'}
-          {fieldName === 'waveform_base64' && 'Forma de Onda'}
-          {fieldName === 'audio_vector' && 'Áudio Original'}
+      <div className="border-t border-gray-600/30 pt-8 mt-8">
+        <h2 className="text-2xl font-bold text-white mb-6 bg-gradient-to-r from-purple-500 to-blue-500 inline-block text-transparent bg-clip-text flex items-center gap-2">
+          {fieldName === 'spectrogram_base64' && <><BsBarChartFill /> Espectrograma</>}
+          {fieldName === 'waveform_base64' && <><GiWaveSurfer /> Forma de Onda</>}
+          {fieldName === 'audio_vector' && <><AiOutlineAudio /> Áudio Original</>}
         </h2>
         
-        <div className="bg-gray-700 p-4 rounded-lg mb-4">
+        <div className="bg-gray-800/50 p-6 rounded-xl shadow-lg backdrop-blur-sm mb-6 border border-gray-700/30 hover:border-purple-500/30 transition-all duration-300">
           {(fieldName === 'spectrogram_base64' || fieldName === 'waveform_base64') ? (
             <img 
               src={fullUrl}
               alt={fieldName}
-              className="w-full h-auto object-contain max-h-[500px] rounded-lg"
+              className="w-full h-auto object-contain max-h-[500px] rounded-lg hover:scale-[1.02] transition-transform duration-300"
               onError={(e) => {
                 console.error(`Erro ao carregar imagem ${fieldName}:`, e);
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 target.parentElement?.insertAdjacentHTML(
                   'beforeend',
-                  '<p class="text-red-400 p-4">Erro ao carregar imagem</p>'
+                  '<p class="text-red-400 p-4 text-center font-medium">Erro ao carregar imagem</p>'
                 );
               }}
             />
@@ -71,10 +74,6 @@ const AnaliseAudio = () => {
             </audio>
           ) : null}
         </div>
-
-        <p className="text-sm text-gray-400 mt-2">
-          Caminho do arquivo: {fullUrl}
-        </p>
       </div>
     );
   };
@@ -100,8 +99,6 @@ const AnaliseAudio = () => {
       }
 
       const data = await response.json();
-      console.log('Dados recebidos:', data);
-
       setAnalysisResult(data);
     } catch (error) {
       console.error('Erro completo:', error);
@@ -112,69 +109,95 @@ const AnaliseAudio = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-        <div className="px-6 py-8">
-          <h1 className="text-3xl font-bold text-white mb-8">Análise de Áudio</h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto bg-gray-800/40 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm border border-gray-700/30">
+        <div className="px-8 py-10">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 mb-10 text-center flex items-center justify-center gap-3">
+            <GiSoundWaves className="text-4xl text-purple-400" />
+            Análise de Áudio
+          </h1>
 
-          <form onSubmit={handleSubmit} className="mb-8">
-            <div className="mb-6">
-              <label className="block text-gray-300 text-lg font-medium mb-2">
+          <form onSubmit={handleSubmit} className="mb-10">
+            <div className="mb-8">
+              <label className="block text-gray-200 text-xl font-medium mb-4 flex items-center gap-2">
+                <FaFileAudio className="text-purple-400" />
                 Selecione um arquivo de áudio (WAV):
               </label>
-              <input
-                type="file"
-                accept=".wav"
-                onChange={handleFileChange}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-purple-500"
-              />
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".wav"
+                  onChange={handleFileChange}
+                  className="w-full p-4 rounded-xl bg-gray-700/50 text-white border border-gray-600/30 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 hover:bg-gray-700/70"
+                />
+                <BsUpload className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              </div>
               {errorMessage && (
-                <p className="mt-2 text-red-400">{errorMessage}</p>
+                <p className="mt-3 text-red-400 bg-red-400/10 p-3 rounded-lg flex items-center gap-2">
+                  <BsCheckCircle className="text-red-400" />
+                  {errorMessage}
+                </p>
               )}
             </div>
             <button
               type="submit"
               disabled={loading || !audioFile}
-              className={`w-full py-3 px-4 rounded-lg font-medium text-white ${
+              className={`w-full py-4 px-6 rounded-xl font-semibold text-white text-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 ${
                 loading || !audioFile
                   ? 'bg-gray-600 cursor-not-allowed'
-                  : 'bg-purple-600 hover:bg-purple-700'
+                  : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg'
               }`}
             >
-              {loading ? 'Analisando...' : 'Analisar Áudio'}
+              {loading ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  Analisando...
+                </>
+              ) : (
+                <>
+                  <GiSoundWaves />
+                  Analisar Áudio
+                </>
+              )}
             </button>
           </form>
 
           {analysisResult && (
-            <div className="space-y-6">
-              <div className="border-b border-gray-700 pb-4">
-                <h2 className="text-xl font-semibold text-white mb-4">Resultados da Análise</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-400">Tipo de Ruído</p>
-                    <p className="text-lg font-medium text-white">
+            <div className="space-y-8">
+              <div className="border-b border-gray-700/30 pb-6">
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 mb-6 flex items-center gap-2">
+                  <BsCheckCircle />
+                  Resultados da Análise
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gray-800/30 p-5 rounded-xl border border-gray-700/30 hover:border-purple-500/30 transition-all duration-300">
+                    <p className="text-sm text-gray-400 mb-2 flex items-center gap-2">
+                      <GiSoundWaves />
+                      Tipo de Ruído
+                    </p>
+                    <p className="text-lg font-semibold text-white capitalize">
                       {analysisResult.analysis_results.predicted_class || 'Não identificado'}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-400">ID do Registro</p>
-                    <p className="text-lg font-medium text-white">
+                  <div className="bg-gray-800/30 p-5 rounded-xl border border-gray-700/30 hover:border-purple-500/30 transition-all duration-300">
+                    <p className="text-sm text-gray-400 mb-2 flex items-center gap-2">
+                      <BsCheckCircle />
+                      ID do Registro
+                    </p>
+                    <p className="text-lg font-semibold text-white">
                       {analysisResult.id || 'Não disponível'}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-400">Tempo de Resposta</p>
-                    <p className="text-lg font-medium text-white">
+                  <div className="bg-gray-800/30 p-5 rounded-xl border border-gray-700/30 hover:border-purple-500/30 transition-all duration-300">
+                    <p className="text-sm text-gray-400 mb-2 flex items-center gap-2">
+                      <BsClock />
+                      Tempo de Resposta
+                    </p>
+                    <p className="text-lg font-semibold text-white">
                       {analysisResult.analysis_results.tempo_resposta ? `${analysisResult.analysis_results.tempo_resposta.toFixed(2)}s` : '0.00s'}
                     </p>
                   </div>
                 </div>
-              </div>
-
-              <div className="text-xs text-gray-400 mb-4">
-                <pre>
-                  {JSON.stringify(analysisResult, null, 2)}
-                </pre>
               </div>
 
               {analysisResult.analysis_results.spectrogram_base64 && (

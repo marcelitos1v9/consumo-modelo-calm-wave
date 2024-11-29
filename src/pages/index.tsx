@@ -18,9 +18,6 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
             Bem-vindo ao Calm Wave
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
-            Sistema de Análise e Identificação de Ruídos Urbanos
-          </p>
         </div>
 
         {/* Cards de Ação Rápida */}
