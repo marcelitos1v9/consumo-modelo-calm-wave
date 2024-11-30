@@ -67,7 +67,7 @@ const Header = () => {
             </li>
             <li>
               <Link 
-                href="/suporte" 
+                href="/Suporte" 
                 className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded-lg p-2" 
                 aria-label="Ir para suporte"
               >
@@ -158,7 +158,7 @@ const Header = () => {
               </li>
               <li>
                 <Link 
-                  href="/suporte" 
+                  href="/Suporte" 
                   className="text-white hover:text-purple-300 transition duration-300 flex items-center space-x-2 p-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
                   aria-label="Ir para suporte"
                   onClick={() => setIsMenuOpen(false)}
