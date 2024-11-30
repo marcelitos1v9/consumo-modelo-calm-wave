@@ -62,7 +62,7 @@ const Header = () => {
                 aria-label="Ir para o dashboard"
               >
                 <MdOutlineAnalytics className="text-xl" aria-hidden="true" />
-                <span>Dashboard</span>
+                <span>Dados</span>
               </Link>
             </li>
             <li>
@@ -153,7 +153,7 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <MdOutlineAnalytics className="text-xl" aria-hidden="true" />
-                  <span>Dashboard</span>
+                  <span>Dados</span>
                 </Link>
               </li>
               <li>

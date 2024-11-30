@@ -1,5 +1,11 @@
 import Suporte from "../../components/Suporte";
+import Footer from "@/components/Footer-sistema";
 
 export default function SuportePage() {
-  return <Suporte />;
+  return(
+    <div>
+      <Suporte />
+      <Footer />
+    </div>
+  );
 }
