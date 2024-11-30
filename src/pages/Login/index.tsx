@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Webapplication() {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    name: "",
+    confirmPassword: ""
+  });
 
   // Detecta se é dispositivo móvel
   useEffect(() => {
@@ -13,6 +25,58 @@ export default function Webapplication() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (!isLogin && formData.password !== formData.confirmPassword) {
+        toast.error("As senhas não coincidem!");
+        return;
+      }
+
+      // Validações básicas
+      if (!formData.email || !formData.password) {
+        toast.error("Preencha todos os campos obrigatórios!");
+        return;
+      }
+
+      if (!isLogin && !formData.name) {
+        toast.error("Nome é obrigatório para cadastro!");
+        return;
+      }
+
+      // Aqui você implementaria a lógica de autenticação/registro
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${isLogin ? 'login' : 'register'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        toast.success(isLogin ? "Login realizado com sucesso!" : "Cadastro realizado com sucesso!");
+        router.push('/home');
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Ocorreu um erro!");
+      }
+
+    } catch (error) {
+      toast.error("Erro ao processar sua solicitação!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -52,7 +116,7 @@ export default function Webapplication() {
           </div>
         </div>
 
-        {/* Container para o fone e efeitos - Ajustado para mobile */}
+        {/* Container para o fone e efeitos */}
         <div className={`${isMobile ? 'relative mb-8' : 'absolute left-[15%]'} flex items-center z-10`}>
           <div className="relative transform hover:scale-105 transition-transform duration-300">
             <img
@@ -63,99 +127,126 @@ export default function Webapplication() {
           </div>
         </div>
 
-        {/* Container do formulário - Responsivo */}
-        <div className="bg-[#010101] p-6 md:p-8 rounded-lg shadow-lg w-full max-w-md mx-auto md:ml-auto md:mr-20 backdrop-blur-lg bg-opacity-90 hover:shadow-2xl transition-all duration-300 z-20">
-          <div className="flex justify-center mb-6 md:mb-8 transform hover:scale-110 transition-transform duration-300">
+        {/* Container do formulário */}
+        <div className="bg-[#010101] p-10 rounded-lg shadow-lg w-full max-w-lg mx-auto md:ml-auto md:mr-20 backdrop-blur-lg bg-opacity-90 hover:shadow-2xl transition-all duration-300 z-20">
+          <div className="flex justify-center mb-10 transform hover:scale-110 transition-transform duration-300">
             <img
               src="icons/logo_sem_nome.png"
               alt="Logo Calm Wave"
-              className="w-16 md:w-20 h-auto"
+              className="w-24 h-auto"
             />
           </div>
-          <h2 className="text-xl md:text-2xl text-white font-bold text-center mb-6 animate-fade-in" role="heading" aria-level={1}>
-            {isLogin ? 'Login' : 'Registrar'}
+          
+          <h2 className="text-3xl text-white font-bold text-center mb-10 animate-fade-in">
+            {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
           </h2>
-          <form className="space-y-4 md:space-y-6" noValidate>
-            <div className="transform hover:scale-105 transition-all duration-300">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                Email
-              </label>
+
+          <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+            <div className="relative transform hover:scale-105 transition-all duration-300">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiMail className="h-6 w-6 text-gray-400" />
+              </div>
               <input
                 type="email"
                 id="email"
                 name="email"
-                aria-required="true"
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                value={formData.email}
+                onChange={handleChange}
+                className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
                 placeholder="seu@email.com"
-                autoComplete="email"
+                required
               />
             </div>
+
             {!isLogin && (
-              <div className="transform hover:scale-105 transition-all duration-300">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300">
-                  Nome
-                </label>
+              <div className="relative transform hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiUser className="h-6 w-6 text-gray-400" />
+                </div>
                 <input
                   type="text"
                   id="name"
                   name="name"
-                  aria-required="true"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
-                  placeholder="Seu nome"
-                  autoComplete="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                  placeholder="Seu nome completo"
+                  required
                 />
               </div>
             )}
-            <div className="transform hover:scale-105 transition-all duration-300">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                Senha
-              </label>
+
+            <div className="relative transform hover:scale-105 transition-all duration-300">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiLock className="h-6 w-6 text-gray-400" />
+              </div>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                aria-required="true"
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
-                placeholder="********"
-                autoComplete={isLogin ? "current-password" : "new-password"}
+                value={formData.password}
+                onChange={handleChange}
+                className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                placeholder="Sua senha"
+                required
                 minLength={8}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                {showPassword ? (
+                  <FiEyeOff className="h-6 w-6 text-gray-400" />
+                ) : (
+                  <FiEye className="h-6 w-6 text-gray-400" />
+                )}
+              </button>
             </div>
+
             {!isLogin && (
-              <div className="transform hover:scale-105 transition-all duration-300">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
-                  Confirmar Senha
-                </label>
+              <div className="relative transform hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiLock className="h-6 w-6 text-gray-400" />
+                </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
-                  aria-required="true"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
-                  placeholder="********"
-                  autoComplete="new-password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                  placeholder="Confirme sua senha"
+                  required
                   minLength={8}
                 />
               </div>
             )}
+
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300"
-              aria-label={isLogin ? "Fazer login" : "Criar conta"}
+              disabled={loading}
+              className={`w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg text-white text-lg font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300 flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {isLogin ? 'Entrar' : 'Registrar'}
+              {loading ? (
+                <div className="w-7 h-7 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                isLogin ? 'Entrar' : 'Criar conta'
+              )}
             </button>
           </form>
-          <p className="mt-4 text-center text-sm text-gray-400">
-            {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}{' '}
+
+          <div className="mt-8 text-center">
+            <p className="text-gray-400 text-lg">
+              {isLogin ? 'Ainda não tem uma conta?' : 'Já possui uma conta?'}
+            </p>
             <button 
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-500 hover:text-blue-400 transition-colors duration-300 focus:outline-none focus:underline"
-              aria-label={isLogin ? "Alternar para tela de registro" : "Alternar para tela de login"}
+              className="mt-3 text-blue-500 hover:text-blue-400 font-medium text-lg transition-colors duration-300 focus:outline-none focus:underline"
             >
-              {isLogin ? 'Registre-se' : 'Faça login'}
+              {isLogin ? 'Criar conta gratuita' : 'Fazer login'}
             </button>
-          </p>
+          </div>
         </div>
       </div>
 

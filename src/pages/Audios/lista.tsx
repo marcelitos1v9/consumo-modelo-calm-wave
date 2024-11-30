@@ -1,6 +1,7 @@
-import React from 'react';
-import Header from '@/components/Header';
-import AudioList from '@/components/AudioList';
+import React from "react";
+import Header from "@/components/Header";
+import AudioList from "@/components/AudioList";
+import Footer from "@/components/Footer-sistema";
 
 const ListaAudiosPage = () => {
   return (
@@ -12,8 +13,9 @@ const ListaAudiosPage = () => {
         </h1>
         <AudioList />
       </main>
+      <Footer />
     </div>
   );
 };
 
-export default ListaAudiosPage; 
+export default ListaAudiosPage;
