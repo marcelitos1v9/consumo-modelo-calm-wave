@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiPhone } from "react-icons/fi";
 
 export default function Webapplication() {
   const router = useRouter();
@@ -13,6 +13,7 @@ export default function Webapplication() {
     email: "",
     password: "",
     name: "",
+    cellphone_number: "",
     confirmPassword: ""
   });
 
@@ -26,6 +27,42 @@ export default function Webapplication() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Função para verificar se o token é válido
+  const validateToken = async (token: string) => {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_EXPRESS;
+      const response = await fetch(`${baseUrl}/validate-token`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Erro ao validar token:', error);
+      return false;
+    }
+  };
+
+  // Verifica se já existe um token válido ao carregar a página
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const isValid = await validateToken(token);
+        if (isValid) {
+          router.push('/home');
+        } else {
+          localStorage.removeItem('token');
+        }
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -33,45 +70,99 @@ export default function Webapplication() {
     });
   };
 
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (!isLogin && formData.password !== formData.confirmPassword) {
-        toast.error("As senhas não coincidem!");
+      // Validação de email
+      if (!validateEmail(formData.email)) {
+        toast.error("Por favor, insira um email válido!");
+        setLoading(false);
         return;
       }
 
       // Validações básicas
       if (!formData.email || !formData.password) {
         toast.error("Preencha todos os campos obrigatórios!");
+        setLoading(false);
         return;
       }
 
-      if (!isLogin && !formData.name) {
-        toast.error("Nome é obrigatório para cadastro!");
-        return;
+      // Validação adicional para registro
+      if (!isLogin) {
+        if (!formData.name || !formData.cellphone_number) {
+          toast.error("Nome e telefone são obrigatórios para cadastro!");
+          setLoading(false);
+          return;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          toast.error("As senhas não coincidem!");
+          setLoading(false);
+          return;
+        }
       }
 
-      // Aqui você implementaria a lógica de autenticação/registro
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${isLogin ? 'login' : 'register'}`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_EXPRESS;
+      const endpoint = isLogin ? 'login' : 'register';
+      
+      console.log(`Fazendo requisição para: ${baseUrl}/${endpoint}`); // Debug
+
+      const requestBody = isLogin ? 
+        { 
+          email: formData.email, 
+          password: formData.password 
+        } :
+        { 
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          cellphone_number: formData.cellphone_number,
+          role: 'user'
+        };
+
+      console.log('Request body:', requestBody); // Debug
+
+      const response = await fetch(`${baseUrl}/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(requestBody)
       });
 
+      const data = await response.json();
+      console.log('Response:', data); // Debug
+
       if (response.ok) {
-        toast.success(isLogin ? "Login realizado com sucesso!" : "Cadastro realizado com sucesso!");
-        router.push('/home');
+        if (isLogin && data.token) {
+          localStorage.setItem('token', data.token);
+          toast.success("Login realizado com sucesso!");
+          router.push('/home');
+        } else if (!isLogin) {
+          toast.success("Cadastro realizado com sucesso!");
+          setIsLogin(true); // Muda para a tela de login após cadastro
+          // Limpa o formulário após registro bem-sucedido
+          setFormData({
+            email: "",
+            password: "",
+            name: "",
+            cellphone_number: "",
+            confirmPassword: ""
+          });
+        }
       } else {
-        const error = await response.json();
-        toast.error(error.message || "Ocorreu um erro!");
+        const errorMessage = data.error || data.message || "Ocorreu um erro!";
+        toast.error(errorMessage);
       }
 
     } catch (error) {
+      console.error('Erro completo:', error); // Debug
       toast.error("Erro ao processar sua solicitação!");
     } finally {
       setLoading(false);
@@ -152,28 +243,53 @@ export default function Webapplication() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                className={`pl-12 w-full px-4 py-4 bg-gray-800 border ${
+                  formData.email && !validateEmail(formData.email) 
+                    ? 'border-red-500 focus:ring-red-500' 
+                    : 'border-gray-700 focus:ring-blue-500'
+                } rounded-lg text-white focus:outline-none focus:ring-2 transition-colors duration-300`}
                 placeholder="seu@email.com"
                 required
               />
+              {formData.email && !validateEmail(formData.email) && (
+                <p className="text-red-500 text-sm mt-1">Por favor, insira um email válido</p>
+              )}
             </div>
 
             {!isLogin && (
-              <div className="relative transform hover:scale-105 transition-all duration-300">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiUser className="h-6 w-6 text-gray-400" />
+              <>
+                <div className="relative transform hover:scale-105 transition-all duration-300">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiUser className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                    placeholder="Seu nome completo"
+                    required
+                  />
                 </div>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
-                  placeholder="Seu nome completo"
-                  required
-                />
-              </div>
+
+                <div className="relative transform hover:scale-105 transition-all duration-300">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiPhone className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    id="cellphone_number"
+                    name="cellphone_number"
+                    value={formData.cellphone_number}
+                    onChange={handleChange}
+                    className="pl-12 w-full px-4 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                    placeholder="Seu número de telefone"
+                    required
+                  />
+                </div>
+              </>
             )}
 
             <div className="relative transform hover:scale-105 transition-all duration-300">
@@ -225,8 +341,12 @@ export default function Webapplication() {
 
             <button
               type="submit"
-              disabled={loading}
-              className={`w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg text-white text-lg font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300 flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              disabled={loading || (formData.email && !validateEmail(formData.email))}
+              className={`w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg text-white text-lg font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300 flex items-center justify-center ${
+                loading || (formData.email && !validateEmail(formData.email)) 
+                  ? 'opacity-70 cursor-not-allowed' 
+                  : ''
+              }`}
             >
               {loading ? (
                 <div className="w-7 h-7 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
