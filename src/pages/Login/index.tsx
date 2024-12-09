@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiPhone } from "react-icons/fi";
 
-export default function Webapplication() {
+const Login = () => {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -422,3 +422,5 @@ export default function Webapplication() {
     </>
   );
 }
+
+export default Login;

@@ -77,7 +77,7 @@ const Header = () => {
             </li>
             <li>
               <Link 
-                href="/logout" 
+                href="/Logout" 
                 className="text-white hover:text-gray-300 transition duration-300 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-2 font-bold hover:bg-white/10" 
                 aria-label="Encerrar sessão e fazer logout do sistema"
               >
@@ -169,7 +169,7 @@ const Header = () => {
               </li>
               <li>
                 <Link 
-                  href="/logout" 
+                  href="/Logout" 
                   className="text-red-400 hover:text-red-300 transition duration-300 flex items-center space-x-2 p-2 rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400 w-full font-bold border border-white"
                   aria-label="Encerrar sessão e fazer logout do sistema"
                   onClick={() => setIsMenuOpen(false)}

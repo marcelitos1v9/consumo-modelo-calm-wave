@@ -1,6 +1,24 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import { Toaster } from 'react-hot-toast';
+import ProtectedRoute from '../components/ProtectedRoute';
+import type { AppProps } from 'next/app';
+import '../styles/globals.css';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+function MyApp({ Component, pageProps, router }: AppProps) {
+  const publicRoutes = ['/', '/Login'];
+  const isPublicRoute = publicRoutes.includes(router.pathname);
+
+  return (
+    <>
+      <Toaster position="top-right" />
+      {isPublicRoute ? (
+        <Component {...pageProps} />
+      ) : (
+        <ProtectedRoute>
+          <Component {...pageProps} />
+        </ProtectedRoute>
+      )}
+    </>
+  );
 }
+
+export default MyApp;
