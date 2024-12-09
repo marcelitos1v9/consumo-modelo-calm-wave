@@ -18,19 +18,48 @@ export default function Suporte() {
     setLoading(true);
     
     try {
-      // Simulando envio para API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success('Solicitação enviada com sucesso! Em breve entraremos em contato.');
-      setFormData({
-        nome: '',
-        email: '',
-        assunto: '',
-        descricao: '',
-        prioridade: 'baixa'
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Você precisa estar logado para enviar uma solicitação');
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_EXPRESS}/support`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          subject: formData.assunto,
+          content: formData.descricao,
+          typeRequest: formData.assunto,
+          priority: formData.prioridade,
+        })
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message || 'Solicitação enviada com sucesso! Em breve entraremos em contato.');
+        // Limpa o formulário após o envio bem-sucedido
+        setFormData({
+          nome: '',
+          email: '',
+          assunto: '',
+          descricao: '',
+          prioridade: 'baixa'
+        });
+      } else {
+        throw new Error(data.error || 'Erro ao enviar solicitação');
+      }
     } catch (error) {
-      toast.error('Erro ao enviar solicitação. Tente novamente.');
+      console.error('Erro:', error);
+      if (error instanceof Error) {
+        toast.error(error.message || 'Erro ao enviar solicitação. Tente novamente.');
+      } else {
+        toast.error('Erro ao enviar solicitação. Tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
